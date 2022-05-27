@@ -25,20 +25,24 @@ browser = webdriver.Chrome("chromedriver.exe")
 browser.get(START_URL)
 time.sleep(10)
 def scrape():
-    headers = ["Name", "Distance", "Mass", "Radius"]
-    stars_data = []
-    for i in range(0, 1):
-        soup = BeautifulSoup(browser.page_source, "html.parser")
-        for ul_tag in soup.find_all("ul", attrs={"class", "Proper name"}):
-            li_tags = ul_tag.find_all("li")
-            temp_list = []
-            for index, li_tag in enumerate(li_tags):
-                if index == 0:
-                    temp_list.append(li_tag.find_all("a")[0].contents[0])
-            stars_data.append(temp_list)
-        #browser.find_element_by_xpath('//*[@id="primary_column"]/footer/div/div/div/nav/span[2]/a').click()
-    with open("scrapper.csv", "w") as f:
+    headers = ["Magnitude","Name","Designation", "Distance","Spectral Class", "Mass", "Radius","Luminosity",]
+    soup = BeautifulSoup(browser.page_source, "html.parser")
+    data = soup.find('table')
+    row_data = data.find_all('tr')
+    temp_list = []
+    names = []
+    for tr in row_data:
+        x = tr.find_all('td')
+        row = [i.text.rstrip()for i in x]
+        temp_list.append(row)
+        print(temp_list)
+    """"
+    for i in range(0,len(temp_list)):
+        names.append(temp_list[i][1])
+    print(temp)
+    """
+    with open("scrapper_3.csv", "w",encoding = "utf-8") as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(headers)
-        csvwriter.writerows(stars_data)
+        csvwriter.writerows(temp_list)
 scrape()
